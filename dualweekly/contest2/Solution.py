@@ -99,19 +99,36 @@ class Solution:
         numofN = len(strN) - bias
         base = '0,1,6,8,9'.split(',')
         temp = []
-        def go(last:str,deep:int):
+        def go(last:str,deep:int,bias:int):
             if deep == numofN:
                 temp.append(last)
-                return
-            val = int(last+'0'*(numofN-deep-1))
+                return bias
+            val = int(last+'0'*(numofN-deep))
+            val9 = int(last+'9'*(numofN-deep))
             if val > N:
-                return
-            strval = str(val)
-            pos_zero = len(last)
-            if len(strval) % 2 == 1 and (val[len(val) // 2] == '6' or ss[len(ss) // 2] == '9'):
+                return bias
+            if val9 <= N and deep > 0:
+                dns = str(int(last))
+                done_num = len(dns)
+                remain = numofN - deep
+                if done_num > remain:
+                    pos = remain
+                    flag = False
+                    if (dns[-1] == '6') :
+                        if dns[pos] != '9':
+                            flag = True
+                    elif (dns[-1] == '9') :
+                        if dns[pos] != '6':
+                            flag = True
+                    elif dns[-1] != dns[pos]:
+                        flag = True
+                    if flag:
+                        bias += 5 ** remain
+                        return bias
             for it in base:
-                go(last+it,deep+1)
-        go('',0)
+                bias = go(last+it,deep+1,bias)
+            return bias
+        bias = go('',0,bias)
         ans = 0
         for t in temp:
             num = int(t)
@@ -140,5 +157,5 @@ class Solution:
 if __name__ == '__main__':
     s = Solution()
     # print(s.permute("{a,b}c{d,e}f"))
-    # print(s.confusingNumberII(999959))
+    # print(s.confusingNumberII(1e9))
     print(s.confusingNumberII2(1e9))
