@@ -44,31 +44,42 @@ class Solution:
         return ans
 
     def numWays(self, steps: int, arrLen: int) -> int:
-        from scipy.special import comb
-        table = [1, 0]
+        # from scipy.special import comb
+        # table = [1, 0]
+        #
+        # def go(remain_steps, ind):
+        #     if ind < 0 or ind == arrLen:
+        #         return 0
+        #     if ind > remain_steps:
+        #         return 0
+        #     if ind == remain_steps:
+        #         return 1
+        #     if ind == 0 and remain_steps < len(table):
+        #         return table[remain_steps]
+        #     return go(remain_steps - 1, ind - 1) + go(remain_steps - 1, ind + 1)
+        #
+        # for i in range(2,steps + 1):
+        #     if i % 2 == 1:
+        #         table.append(0)
+        #     else:
+        #         if i // 2 > arrLen - 1:
+        #             table.append(go(i, 0))
+        #         else:
+        #             table.append(int(comb(i,i//2))//2)
+        # for i in range(len(table)):
+        #     table[i] *= int(comb(steps, i))
+        # return sum(table) % (10 ** 9 + 7)
+        mxr = min(steps // 2 + 1, arrLen)
+        prev = [0] * (mxr + 2)
+        prev[1] = 1
+        now = [0] * (mxr + 2)
+        for i in range(steps):
+            for j in range(1,mxr+1):
+                now[j] = sum(prev[j-1:j+2])
+            prev = now
+            now = [0] * (mxr + 2)
+        return prev[1] % (10**9+7)
 
-        def go(remain_steps, ind):
-            if ind < 0 or ind == arrLen:
-                return 0
-            if ind > remain_steps:
-                return 0
-            if ind == remain_steps:
-                return 1
-            if ind == 0 and remain_steps < len(table):
-                return table[remain_steps]
-            return go(remain_steps - 1, ind - 1) + go(remain_steps - 1, ind + 1)
-
-        for i in range(2,steps + 1):
-            if i % 2 == 1:
-                table.append(0)
-            else:
-                if i // 2 > arrLen - 1:
-                    table.append(go(i, 0))
-                else:
-                    table.append(int(comb(i,i//2))//2)
-        for i in range(len(table)):
-            table[i] *= int(comb(steps, i))
-        return sum(table) % (10 ** 9 + 7)
 
 if __name__ == '__main__':
     s = Solution()
