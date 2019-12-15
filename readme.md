@@ -10,6 +10,7 @@
 | 3| [链接](dualweekly/contest3)|
 | 4| [链接](dualweekly/contest4)|
 | 14| [链接](dualweekly/contest14)|
+| 15| [链接](dualweekly/contest15)|
 
 ## 单周赛
 
@@ -29,6 +30,7 @@
 | 153| [链接](weekly/contest153)|
 | 157| [链接](weekly/contest157)|
 | 158| [链接](weekly/contest158)|
+| 162| [链接](weekly/contest162)|
 | 163| [链接](weekly/contest163)|
 | 164| [链接](weekly/contest164)|
 | 165| [链接](weekly/contest165)|
