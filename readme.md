@@ -16,6 +16,7 @@
 | 18| [链接](dualweekly/contest18)|
 | 20| [链接](dualweekly/contest20)|
 | 21| [链接](dualweekly/contest21)|
+| 22| [链接](dualweekly/contest22)|
 
 ## 单周赛
 
