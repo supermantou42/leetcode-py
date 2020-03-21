@@ -49,3 +49,5 @@
 | 172| [链接](weekly/contest172)|
 | 173| [链接](weekly/contest173)|
 | 177| [链接](weekly/contest177)|
+| 179| [链接](weekly/contest179)|
+| 180| [链接](weekly/contest180)|
