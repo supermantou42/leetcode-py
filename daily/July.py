@@ -241,7 +241,148 @@ class Solution:
             return go(node.left, res) or go(node.right, res)
         return go(root,sum)
 
+    # 8th
+    def divingBoard(self, shorter: int, longer: int, k: int) -> List[int]:
+        ans = []
+        if shorter == longer:
+            return [shorter*k]
+        v = shorter * k
+        d = longer - shorter
+        ans.append(v)
+        for i in range(1,k):
+            v += d
+            ans.append(v)
+        return ans
+
+    # 9th
+    def respace(self, dictionary: List[str], sentence: str) -> int:
+        trietree = {}
+        for words in dictionary:
+            t = trietree
+            for char in words[:0:-1]:
+                if char not in t:
+                    t[char] = {}
+                t = t[char]
+            if words[0] not in t:
+                t[words[0]] = {None:"end"}
+            else:
+                t[words[0]][None] = "end"
+
+        n = len(sentence)
+        dp = list(range(n+1))
+
+        for i in range(1,n+1):
+            Flag = True
+            t = trietree
+            for j in range(1,i+1)[::-1]:
+                dp[i] = min(dp[i], dp[j-1] + i - j + 1)
+                if sentence[j-1] not in t:
+                    Flag = False
+                    break
+                else:
+                    if None in t[sentence[j-1]]:
+                        dp[i] = min(dp[i], dp[j-1])
+                        if len(t[sentence[j-1]]) == 1:
+                            Flag = False
+                            break
+                    t = t[sentence[j-1]]
+            if Flag and None in t:
+                dp[i] = 0
+
+        return dp[-1]
+
+    #10th
+    def maxProfit(self, prices: List[int]) -> int:
+        n = len(prices)
+        # 0 冷冻且不持有 1 冷冻持有 2 不持有不冷冻
+        dp = [[0,0,0] for _ in range(n)]
+        dp[0][1] = -prices[0]
+        for i in range(1,n):
+            dp[i][0] = dp[i-1][1] + prices[i]
+            dp[i][1] = max(dp[i-1][1], dp[i-1][2] - prices[i])
+            dp[i][2] = max(dp[i-1][2], dp[i-1][0])
+
+        return max(dp[-1])
+    # 11st
+    def countSmaller(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        if n == 0:
+            return []
+        dnums = sorted(set(nums))
+        nums2idx = {num:idx+1 for idx,num in enumerate(dnums)}
+        dn = len(dnums)+1
+        nums = [nums2idx[num] for num in nums]
+        bit = BIT(dn)
+        ans = [0] * n
+        bit.update(nums[-1])
+        for i in range(n-1)[::-1]:
+            ans[i] = bit.query(nums[i]-1) # -1 表示不能取等
+            bit.update(nums[i])
+        return ans
+
+    # 12nd
+    def calculateMinimumHP(self, dungeon: List[List[int]]) -> int:
+        # DFS 超时
+        # m = len(dungeon)
+        # n = len(dungeon[0])
+        # ans = [-10**9]
+        # def dfs(i,j,cur,hismin):
+        #     cur += dungeon[i][j]
+        #     hismin = min(hismin,cur)
+        #     if i == m-1 and j == n-1:
+        #         ans[0] = max(ans[0], hismin)
+        #     if hismin > ans[0]:
+        #         if i < m - 1:
+        #             dfs(i+1,j,cur,hismin)
+        #         if j < n - 1:
+        #             dfs(i,j+1,cur,hismin)
+        # dfs(0,0,0,10**9)
+        # return max(1-ans[-1],1)
+        # DP
+        m = len(dungeon)
+        n = len(dungeon[0])
+        dp = [[0 for _ in range(n)] for _ in range(m)]
+        dp[-1][-1] = max(-dungeon[-1][-1]+1, 1)
+        for i in range(m-1)[::-1]:
+            dp[i][-1] = max(dp[i+1][-1] - dungeon[i][-1],1)
+        for j in range(n-1)[::-1]:
+            dp[-1][j] = max(dp[-1][j+1] - dungeon[-1][j],1)
+        for i in range(m-1)[::-1]:
+            for j in range(n-1)[::-1]:
+                dp[i][j] = max(1, min(dp[i+1][j], dp[i][j+1]) - dungeon[i][j])
+
+        return dp[0][0]
+
+class BIT:
+    def __init__(self,n):
+        self.data = [0]*n
+        self.n = n
+    def lowbit(self,x):
+        return x & (-x)
+
+    def query(self,idx):
+        ans = 0
+        while idx>0:
+            ans += self.data[idx]
+            idx -= self.lowbit(idx)
+        return ans
+
+    def rangesum(self,l,r):
+        if l == 0:
+            return self.query(r)
+        else:
+            return self.query(r) - self.query(l-1)
+
+    def update(self,x,v=1):
+        while x < self.n:
+            self.data[x]+=v
+            x+=self.lowbit(x)
 
 if __name__ == '__main__':
     s = Solution()
-    print(s.isMatch("a", "a**"))
+    # print(s.isMatch("a", "a**"))
+#     print(s.respace(["reqpqsspxepbblebeqcx","iapuwgpglww","lee","r","ra","mecb","x","w","pwurqagwecsxeuqxgc","b"]
+# ,"cwpilmxbulaql"))
+#     print(s.countSmaller([5,2,6,1]))
+    print(s.calculateMinimumHP([[-2,-3,3],[-5,-10,1],[10,30,-5]]))
+    print(s.calculateMinimumHP([[1,-3,3],[0,-2,0],[-3,-3,-3]]))
