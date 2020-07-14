@@ -96,6 +96,55 @@ class Solution:
                 dp[i] += dp[i-2]
         return dp[-1]
 
+    def maxValue(self, grid: List[List[int]]) -> int:
+        m = len(grid)
+        n = len(grid[0])
+        dp = [[0] * n for _ in range(m)]
+        dp[0][0] = grid[0][0]
+        for i in range(1,m):
+            dp[i][0] = dp[i-1][0] + grid[i][0]
+        for j in range(1,n):
+            dp[0][j] = dp[0][j-1] + grid[0][j]
+        for i in range(1,m):
+            for j in range(1,n):
+                dp[i][j] = max(dp[i-1][j],dp[i][j-1]) + grid[i][j]
+        return dp[-1][-1]
+
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        s = [ord(ss) for ss in s]
+        lastshowidx = [-1]*256
+        n = len(s)
+        table = [-1]*n
+        for i in range(n):
+            table[i] = lastshowidx[s[i]]
+            lastshowidx[s[i]] = i
+        ans = 1
+        cur = 1
+        for i in range(1,n):
+            if table[i] < i - cur:
+                cur+=1
+                ans = max(ans,cur)
+            else:
+                cur= i - table[i]
+        return ans
+
+    def nthUglyNumber(self, n: int) -> int:
+        i,j,k = 0,0,0
+        dp = [0]*n
+        dp[0] = 1
+        for t in range(1,n):
+            ii = 2*dp[i]
+            jj = 3*dp[j]
+            kk = 5*dp[k]
+            dp[t] = min(ii,jj,kk)
+            if dp[t] == ii:
+                i+=1
+            if dp[t] == jj:
+                j+=1
+            if dp[t] == kk:
+                k+=1
+        return dp[-1]
+
 class MedianFinder:
 
     def __init__(self):
@@ -126,7 +175,7 @@ class MedianFinder:
 if __name__ == '__main__':
     s = Solution()
     # print(s.getLeastNumbers(arr = [0,1,2,1], k = 1))
-    print(s.findNthDigit(666))
+    # print(s.findNthDigit(666))
     # m = MedianFinder()
     # case = [[40], [], [12], [], [16], [], [14], [], [35], [], [19], [], [34], [], [35], [], [28], [], [35], [], [26], [],
     #  [6], [], [8], [], [2], [], [14], [], [25], [], [25], [], [4], [], [33], [], [18], [], [10], [], [14], [], [27], [],
@@ -149,3 +198,9 @@ if __name__ == '__main__':
     # print(m.findMedian())
     # m.addNum(-5)
     # print(m.findMedian())
+
+    # print(s.lengthOfLongestSubstring('abcabcbb'))
+    # print(s.lengthOfLongestSubstring('bbbbb'))
+    # print(s.lengthOfLongestSubstring('pwwkew'))
+
+    print(s.nthUglyNumber(11))

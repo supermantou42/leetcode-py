@@ -353,6 +353,44 @@ class Solution:
 
         return dp[0][0]
 
+    #13rd
+    def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        # 通用-集合操作
+        # import collections
+        # n1 = collections.Counter(nums1)
+        # n2 = collections.Counter(nums2)
+        # sharekey = n1.keys() & n2.keys()
+        # ans = []
+        # for key in sharekey:
+        #     ans += [key] * min(n1[key],n2[key])
+        # return ans
+        # 通用-查表操作
+        import collections
+        n1 = collections.Counter(nums1)
+        ans = []
+        for n in nums2:
+            if n1[n] > 0:
+                ans.append(n)
+                n1[n]-=1
+        return ans
+        # 排序
+        # nums1.sort()
+        # nums2.sort()
+        # ans = []
+        # n = len(nums1)
+        # m = len(nums2)
+        # i,j = 0,0
+        # while i < n and j < m:
+        #     if nums1[i] == nums2[j]:
+        #         ans.append(nums1[i])
+        #         i+=1
+        #         j+=1
+        #     elif nums1[i] < nums2[j]:
+        #         i+=1
+        #     else:
+        #         j+=1
+        # return ans
+
 class BIT:
     def __init__(self,n):
         self.data = [0]*n
