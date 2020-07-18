@@ -391,6 +391,178 @@ class Solution:
         #         j+=1
         # return ans
 
+    # 14th
+    def minimumTotal(self, triangle: List[List[int]]) -> int:
+        n = len(triangle)
+        dp = [0] * n
+        dp[0] = triangle[0][0]
+        for i in range(1, n):
+            dp[i] = dp[i - 1] + triangle[i][i]
+            for j in range(1, i)[::-1]:
+                dp[j] = min(dp[j], dp[j - 1]) + triangle[i][j]
+            dp[0] = dp[0] + triangle[i][0]
+        return min(dp)
+
+        # ans = [10**9+7]
+        # ref = [min(nn) for nn in triangle]
+        # for i in range(n-1)[::-1]:
+        #     ref[i] += ref[i+1]
+
+        # def dfs(depth,i,total):
+        #     if depth == n:
+        #         ans[0] = min(ans[0],total)
+        #         return
+        #     if total + ref[depth] > ans[0]:
+        #         return
+        #     total+=triangle[depth][i]
+        #     dfs(depth+1,i,total)
+        #     dfs(depth+1,i+1,total)
+        # dfs(0,0,0)
+        # return ans[0]
+
+    # 15th
+    def numTrees(self, n: int) -> int:
+        if n <= 1:
+            return 1
+        if n == 2:
+            return 2
+        dp = [0]*(n+1)
+        dp[0] = 1
+        dp[1] = 1
+        dp[2] = 2
+        for i in range(3,n+1):
+            dp[i] = 0
+            for j in range(i//2):
+                dp[i] += 2*dp[j]*dp[i-j-1]
+            if i % 2 == 1:
+                dp[i] += dp[i//2]**2
+        return dp[-1]
+
+    # 16th
+    def isBipartite(self, graph: List[List[int]]) -> bool:
+        # 广度优先
+        # n = len(graph)
+        # color = [0]*n
+        # i = 0
+        # cnt = 0
+        # while i < n and cnt < n:
+        #     if color[i] == 0 and graph[i]:
+        #         color[i] = 1
+        #         cnt+=1
+        #         nowcolor = -1
+        #         nowset = {i}
+        #         while nowset:
+        #             nextset = set()
+        #             for ii in nowset:
+        #                 for j in graph[ii]:
+        #                     if color[j] != 0 and color[j] != nowcolor:
+        #                         return False
+        #                     if color[j] == 0:
+        #                         cnt+=1
+        #                         color[j] = nowcolor
+        #                         nextset.add(j)
+        #             nowcolor = -nowcolor
+        #             nowset = nextset
+        #     i+=1
+        # return True
+        # 并查集
+        n = len(graph)
+        uf = UnionFind(n)
+        for i,g in enumerate(graph):
+            if g:
+                g0 = g[0]
+                for gg in g[1:]:
+                    if uf.isconneted(i,gg):
+                        return False
+                    uf.union(g0,gg)
+        return True
+
+    # 17th
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        n = len(nums)
+        l,r = 0,n
+        while l<r:
+            mid = (l+r) //2
+            if nums[mid] < target:
+                l = mid+1
+            else:
+                r = mid
+        return l
+
+    # 18th
+    def isInterleave(self, s1: str, s2: str, s3: str) -> bool:
+        # 时O(n^2)空O(n^2)
+        # m = len(s1)
+        # n = len(s2)
+        # if m+n != len(s3):
+        #     return False
+        # dp = [[False]*(n+1) for _ in range(m+1)]
+        # dp[0][0] = True
+        # for i in range(1,m+1):
+        #     if dp[i-1][0] and s1[i-1] == s3[i-1]:
+        #         dp[i][0] = True
+        #     else:
+        #         break
+        # for j in range(1,n+1):
+        #     if dp[0][j-1] and s2[j-1] == s3[j-1]:
+        #         dp[0][j] = True
+        #     else:
+        #         break
+        # for i in range(1,m+1):
+        #     for j in range(1,n+1):
+        #         dp[i][j] = (s1[i-1] == s3[i+j-1] and dp[i-1][j]) \
+        #                    or (s2[j-1] == s3[i+j-1] and dp[i][j-1])
+        #
+        # return dp[-1][-1]
+        # 空优化O(n)
+        m = len(s1)
+        n = len(s2)
+        if m+n != len(s3):
+            return False
+        dp = [False]*(n+1)
+        dp[0] = True
+        for j in range(1,n+1):
+            if dp[j-1] and s2[j-1] == s3[j-1]:
+                dp[j] = True
+            else:
+                break
+
+        for i in range(1,m+1):
+            dp[0] = dp[0] and s1[i-1] == s3[i-1]
+            for j in range(1,n+1):
+                dp[j] = (s1[i-1] == s3[i+j-1] and dp[j]) \
+                           or (s2[j-1] == s3[i+j-1] and dp[j-1])
+
+        return dp[-1]
+
+
+class UnionFind:
+    def __init__(self,n):
+        self.values = list(range(n))
+
+    def union(self, p, q):
+        if p == q:
+            return
+        rp = self.find(p)
+        rq = self.find(q)
+        if rp == rq:
+            return
+        self.values[rp] = rq
+
+    def find(self, x):
+        if x == self.values[x]:
+            return x
+        x = self.find(self.values[x])
+        return x
+
+    def isconneted(self,p,q):
+        if p == q:
+            return True
+        rp = self.find(p)
+        rq = self.find(q)
+        return rp == rq
+
+
 class BIT:
     def __init__(self,n):
         self.data = [0]*n
@@ -422,5 +594,9 @@ if __name__ == '__main__':
 #     print(s.respace(["reqpqsspxepbblebeqcx","iapuwgpglww","lee","r","ra","mecb","x","w","pwurqagwecsxeuqxgc","b"]
 # ,"cwpilmxbulaql"))
 #     print(s.countSmaller([5,2,6,1]))
-    print(s.calculateMinimumHP([[-2,-3,3],[-5,-10,1],[10,30,-5]]))
-    print(s.calculateMinimumHP([[1,-3,3],[0,-2,0],[-3,-3,-3]]))
+#     print(s.calculateMinimumHP([[-2,-3,3],[-5,-10,1],[10,30,-5]]))
+#     print(s.calculateMinimumHP([[1,-3,3],[0,-2,0],[-3,-3,-3]]))
+#     print(s.isBipartite([[1,3],[0,2],[1,3],[0,2]]))
+#     print(s.searchInsert([1,3,5,6], 5))
+    print(s.isInterleave(s1 = "a", s2 = "", s3 = "a"))
+    print(s.isInterleave(s1 = "aabcc", s2 = "dbbca", s3 = "aadbbbaccc"))
