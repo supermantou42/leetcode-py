@@ -36,6 +36,7 @@
 | 153| [链接](weekly/contest153)|
 | 157| [链接](weekly/contest157)|
 | 158| [链接](weekly/contest158)|
+| 160| [链接](weekly/contest160)|
 | 161| [链接](weekly/contest161)|
 | 162| [链接](weekly/contest162)|
 | 163| [链接](weekly/contest163)|

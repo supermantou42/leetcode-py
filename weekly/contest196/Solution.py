@@ -14,84 +14,8 @@ class Solution:
         return True
 
     def getLastMoment(self, n: int, left: List[int], right: List[int]) -> int:
-        left.sort()
-        right.sort()
-
-        while left and right:
-            if left[0] < right[0]:
-                left.pop(0)
-            else:
-                break
-
-        while left and right:
-            if left[-1] < right[-1]:
-                right.pop(-1)
-            else:
-                break
-
-        t = 0
-        while True:
-            if len(left) == 0:
-                if len(right) == 0:
-                    return t
-                return t+n-right[0]
-            if len(right) == 0:
-                if len(left) == 0:
-                    return t
-                return t+left[-1]
-            if left[-1] <= right[0]:
-                return t+max(left[-1],n-right[0])
-
-            if left[0] > right[-1] + 1:
-                step = (left[0] - right[-1])//2
-                t+=step
-                for i in range(len(left)):
-                    left[i]-=step
-                for i in range(len(right)):
-                    right[i]+=step
-
-            else:
-                toberight = []
-                i = 1
-                while i < len(left):
-                    if left[i] - left[i-1] != 1:
-                        toberight = left[:i]
-                        left = left[i:]
-                        break
-                    i+=1
-                if i == len(left):
-                    toberight = left
-                    left = []
-
-                tobeleft = []
-                i = len(right)-2
-                while i >= 0:
-                    if right[i+1] - right[i] != 1:
-                        tobeleft = right[i+1:]
-                        right = right[:i+1]
-                        break
-                    i-=1
-                if i == -1:
-                    tobeleft = right
-                    right = []
-
-                for i in range(len(left)):
-                    left[i]-=1
-                for i in range(len(right)):
-                    right[i] += 1
-
-                left += tobeleft
-                left.sort()
-                right+=toberight
-                right.sort()
-                if left[0] == 0:
-                    left.pop(0)
-                if right[-1] == n:
-                    right.pop(-1)
-                t+=1
-
-        return t
-
+        right = [n-r for r in right]
+        return max(left+right)
 
 
     def numSubmat(self, mat: List[List[int]]) -> int:
@@ -137,40 +61,71 @@ class Solution:
     def minInteger(self, num: str, k: int) -> str:
         num = list(map(int,num))
         n = len(num)
-        def fmin(k):
-            midx = 0
-            for idx in range(1,k):
-                if num[idx] < num[midx]:
-                    midx = idx
-                    if num[idx] == 0:
-                        return idx
-            return midx
-        ans = ''
-        while k > 0:
-            midx = fmin(len(num))
+        numtable = [[] for _ in range(10)]
+        for i in range(n):
+            numtable[num[i]].append(i)
 
-            if k >= midx:
-               ans += str(num.pop(midx))
-               k -= midx
+        ancnt = [0]
+        def fmin(x,v,k):
+            flag = False
+            idx, ret = -1,-1
+            for idx in range(v):
+                if numtable[idx] and numtable[idx][0] - x - ancnt[0] <=k:
+                    ret = numtable[idx][0]
+                    numtable[idx].pop(0)
+                    flag = True
+                    break
+            if flag:
+                 for i in range(10):
+                     if numtable[i]:
+                         for j in range(len(numtable[i])):
+                             if numtable[i][j] < ret:
+                                 numtable[i][j] += 1
+
+                 ancnt[0]+=1
+            return idx,ret - x - ancnt[0]
+
+        ans = ''
+        i = 0
+        while k > 0 and i < n:
+            dx,dk = fmin(i,num[i],k)
+            if dx == -1:
+                v = num[i]
+                ans += str(v)
+                numtable[v].pop(0)
+                i += 1
             else:
-                k2 = fmin(k+1)
-                if k2 > 0:
-                    ans += str(num.pop(k2))
-                    k-=k2
-                else:
-                    prev = num[0]
-                    while num and len(num) > k and num[k] >= prev:
-                        ans += str(num.pop(0))
-                    # for i in range(k2+1,len(num)):
-                    #     if num[i] < num[0]:
-                    #         ans += str(num.pop(i))
-                    #         k= 0
-                    #         break
-                    # break
-        return ans + ''.join(map(str,num))
+                ans += str(dx)
+                k -= dk
+        while True:
+            idx = -1
+            j = -1
+            while j < 10:
+                if numtable[j]:
+                    idx = j
+                    break
+                j+=1
+            if idx == -1:
+                break
+            while j < 10:
+                if numtable[j] and numtable[j][0] < numtable[idx][0]:
+                    idx = j
+                j+=1
+
+            numtable[idx].pop(0)
+            ans += str(idx)
+        return ans
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
     s = Solution()
     # print(s.numSubmat([[1,0,1],[0,1,0],[1,0,1]]))
-    print(s.minInteger("294984148179",11))
+    # print(s.minInteger("4321",4))
+    # print(s.minInteger("294984148179",11))
+    print(s.minInteger("9438957234785635408", 23))
